@@ -1,0 +1,27 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class ProductNotify extends Model
+{
+    use HasFactory;
+    protected $table = 'product_notify';
+    protected $fillable = ['user_id', 'product_id', 'email','variation_id'];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
+
+      public function variation()
+    {
+        return $this->belongsTo(ProductVariation::class);
+    }
+}

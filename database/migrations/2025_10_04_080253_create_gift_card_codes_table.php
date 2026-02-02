@@ -1,0 +1,32 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('gift_card_codes', function (Blueprint $table) {
+            $table->id();
+            $table->string('recipient_email')->nullable();
+            $table->string('code')->unique()->nullable();
+            $table->decimal('amount', 8, 2)->default(0);
+            $table->string('status')->default('unused');
+            $table->string('order_id')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('gift_card_codes');
+    }
+};

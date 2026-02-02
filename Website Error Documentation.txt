@@ -1,0 +1,615 @@
+﻿Website Error Documentation
+This document outlines all identified issues on the website. Each item is presented using a standardized structure to support accurate debugging and predictable implementation.
+Structure: Issue → Expected Behavior → Actual Behavior → Required Fix
+1. Homepage
+1.A Search Bar
+Issue: The search bar displayed on the homepage is completely static and non-functional. Users can type into the field, but no search operation is triggered.
+Expected Behavior:
+* User enters a search query into the search bar
+* System processes the query and searches through the product catalog
+* Search results populate and display relevant products
+Actual Behavior:
+* No results are returned
+* No loading state or feedback is provided to the user
+Required Fix:
+* Implement functional search logic that connects to the product index
+* Add search query processing and filtering
+* Display results in a clear, user-friendly format
+* Include loading states and "no results" messaging
+1.B Appointment Dropdown
+Issue: The appointment dropdown menu shows catalogs/collections instead of appointment-specific items.
+Expected Behavior:
+* Dropdown should only display appointment categories or appointment items
+* Users should be able to select from available appointment types
+* Selection should route users to the appointment page
+Actual Behavior:
+* Dropdown is populated with collection data instead of appointment data
+Required Fix:
+* Update the data source query to pull from the appointment dataset instead of collections
+1.C Appointments Preview
+Issue: The appointments preview section on the homepage displays static content with no ability to edit the text or image through the admin panel.
+Expected Behavior:
+* Admin should be able to update the preview text content and change the preview image
+Actual Behavior:
+* Section displays hardcoded content
+* Content cannot be updated without code changes
+Required Fix:
+* Add text content and image upload functionality editing
+1.D Create Bangle Box Preview
+Issue: The three-image preview block for the "Create Bangle Box" section cannot be edited. Both the accompanying text and the three preview images are hardcoded.
+Expected Behavior:
+* Admin should be able to update the preview text content and change the preview image
+Actual Behavior:
+* All three images are static and cannot be changed 
+Required Fix:
+* Add three separate image  fields allowing admin to add text content and image upload
+1.E Hero Section
+Issue: The Bangle Box hero section background image is static and cannot be changed through the admin panel.
+Expected Behavior:
+* Admin should be able to upload new hero images
+Actual Behavior:
+* Hero image is hardcoded in the template
+* No upload or change functionality exists
+Required Fix:
+* Add hero background image field to “Home”Page setting
+
+
+
+
+
+
+2. Missing Banner
+Issue: The hero banner component is completely missing from both the Resources page and Contact page, creating an inconsistent user experience across the site.
+Expected Behavior:
+* Both Resources and Contact pages should display a hero banner at the top
+Actual Behavior:
+* No hero banner appears on either page
+Required Fix:
+* Admin should be able to upload images for these banners and all banners 
+3. Signup Page
+Issue: The country selection dropdown field is missing from the signup form, preventing users from specifying their location during registration.
+Expected Behavior:
+* Signup form should include a country selection dropdown
+Actual Behavior:
+* Country dropdown field does not appear on the signup form
+Required Fix:
+* Restore the country selector field to the signup form
+4. Your Cart
+4.A Empty Cart Handling
+Issue: When a user views an empty cart, the system triggers an error instead of displaying a user-friendly empty cart message.
+Expected Behavior:
+* System should detect when cart is empty
+* Display a friendly message such as "Your cart is empty"
+Actual Behavior:
+* Error message is displayed instead of empty cart UI
+
+
+
+
+
+
+Required Fix:
+* Replace error state with proper empty cart handling
+* Ensure error handling doesn't trigger for expected empty cart state
+4.B Preview Image Issues
+Issue: Product images in the cart either fail to load completely, load incorrect images, or display broken image placeholders.
+Expected Behavior:
+* Each cart item should display the correct product preview image
+Actual Behavior:
+* Some images do not appear at all (broken links)
+* Some images display incorrect products
+Required Fix:
+* Validate image path mapping between products and cart display
+* Ensure product image URLs are correctly stored and retrieved
+* Check for any caching issues that might cause stale images
+4.C Double Pricing
+Issue: The product price is displayed twice in the cart view - appearing in two separate locations when it should only appear once.
+Expected Behavior:
+* Product price should appear once per line item
+* Price should be positioned clearly under the product quantity
+Actual Behavior:
+* Price label/value appears in two locations
+Required Fix:
+* Identify the source of the duplicate pricing display
+* Remove the redundant price label/element
+4.D Trash Can Placement
+Issue: The delete icon (trash can) appears inside the product image preview area instead of in its logical location beside the quantity controls.
+Expected Behavior:
+* Delete icon should be positioned beside the product quantity field
+
+
+
+
+Actual Behavior:
+* Delete icon overlays or appears within the product image
+4.E Top Sellers Link
+Issue: The "Top Sellers" section in the cart does not link to individual product detail pages when products are clicked.
+Expected Behavior:
+* Each product displayed in Top Sellers should be clickable
+Actual Behavior:
+* Products in Top Sellers section are not clickable
+Required Fix:
+* Add proper routing/links to each Top Sellers product
+5. Bundle
+Issue: The system allows users to add out-of-stock products to bundles or directly to the cart, which should be prevented to avoid fulfillment issues and customer dissatisfaction.
+Expected Behavior:
+* System should check product inventory before allowing addition to cart/bundle
+* Add to cart/bundle button should be disabled for unavailable items
+* Users should see clear messaging explaining why they cannot purchase
+Actual Behavior:
+* No stock-level validation occurs
+* Users can add unavailable products to cart/bundle
+Required Fix:
+* Implement real-time stock-level validation before cart/bundle addition
+* Check inventory at multiple points: product page, cart addition, and checkout
+* Disable purchase options for out-of-stock items
+6. Filter
+6.A Low to High Sorting
+Issue: The price sorting feature from low to high does not function - products remain in their original order when this sort option is selected.
+Expected Behavior:
+* User selects "Price: Low to High" sort option
+* Product list reorders with lowest-priced items appearing first
+
+
+Actual Behavior:
+* Sort option can be selected but no reordering occurs
+Required Fix:
+* Debug and correct the sorting logic in product query
+6.B High to Low Sorting
+Issue: The price sorting feature from high to low does not function - products remain in their original order when this sort option is selected.
+Expected Behavior:
+* User selects "Price: High to Low" sort option
+* Product list reorders with highest-priced items appearing first
+Actual Behavior:
+* Sort option can be selected but no reordering occurs
+Required Fix:
+* Debug and correct the sorting logic in product query
+6.C Static Filter Button
+Issue: A "FILTER" button appears above the materials section but is completely non-functional - it serves no purpose and creates user confusion.
+Expected Behavior:
+* Only functional UI elements should be displayed to users
+* If a filter button exists, it should open filter options or trigger filtering action
+Actual Behavior:
+* Button appears but clicking it does nothing
+Required Fix:
+* Remove the static/non-functional filter button element
+* Or the button should open the filter options on the left 
+7. Customer Portal
+7. Email Appearing in Search Bar
+Issue: When a user logs in and navigates to the Customer Portal, their email address incorrectly auto-populates in the search bar field.
+
+
+
+
+
+
+Expected Behavior:
+* Search bar should remain empty and ready for user input
+* Auto-fill should only apply to relevant fields (like billing/shipping forms)
+Actual Behavior:
+* Logged-in user's email appears in the search bar
+Required Fix:
+* Remove unintended auto-fill behavior
+* Investigate what is causing email to populate in search field
+7.B Shipping Address Tab
+Issue: After logging in and navigating to the Customer Portal, the Shipping Address tab displays incorrect static placeholder content and a placeholder image. Most critically, there is no functionality for users to manage their shipping addresses.
+Expected Behavior: When a user accesses the Shipping Address tab in the Customer Portal:
+* If no addresses are saved: Display message "You currently don't have any saved addresses" with an "Add New Address" button
+* If addresses exist: Display list of saved addresses (up to 3 addresses allowed per user)
+* Address management capabilities:
+   * View all saved addresses with complete details (name, street, city, state, postal code, country)
+   * Add a new address via a form with validation
+   * Edit existing addresses by clicking an "Edit" button - opens form pre-populated with current data
+   * Delete addresses with trash can 
+   * Changes should save to the database and reflect immediately
+* Proper error handling and validation for all address operations
+Actual Behavior:
+* Tab shows static placeholder message/image regardless of whether user has saved addresses
+* No functionality exists to add, edit, or delete addresses
+Required Fix:
+* Replace placeholder logic with dynamic state that checks user's saved addresses
+* Implement full CRUD operations for addresses:
+   * Create: Add new address form with validation (required fields, postal code format, etc.)
+   * Read: Display existing addresses in clean, organized format
+   * Update: Edit form with pre-populated data and save functionality
+   * Delete: Remove address with confirmation and proper database deletion
+* Ensure all changes persist to backend/database
+7.C Change Password
+Issue: When a user changes their password through the Customer Portal, the system does not trigger a verification or confirmation email.
+Expected Behavior:
+* User submits password change request with current password and new password
+* System validates current password is correct
+* System validates new password meets security requirements
+* Upon successful password change, system sends verification email to user's registered email address
+Actual Behavior:
+* Password change does not work 
+Required Fix:
+* Implement password-change email trigger in the password update flow
+* Test email delivery 
+* Consider adding email verification step before password change is finalized
+7.D Communication Preferences Notification
+Issue: When users update their communication preferences (specifically when unsubscribing from marketing emails), the system does not send a confirmation notification email.
+Expected Behavior:
+* User updates communication preferences (subscribes or unsubscribes)
+* System processes the preference change
+Actual Behavior:
+* Preference changes do not work at all 
+Required Fix:
+* Implement email trigger when communication preferences are updated
+7.E Unsubscribe Button Not Working
+Issue: The unsubscribe/re-subscribe functionality is completely non-functional. Users cannot change their subscription status through this interface.
+Expected Behavior:
+* User enters their email address in the subscription management field
+* User can click unsubscribe to opt out of marketing communications
+* User can click re-subscribe (if previously unsubscribed) to opt back in
+* Changes should persist to database and affect future email sends
+
+
+
+
+Actual Behavior:
+* Button does nothing when clicked
+Required Fix:
+* Implement complete subscription management logic:
+   * Email validation and database lookup
+   * Status update functionality (subscribe/unsubscribe toggle)
+   * Database persistence of preference changes
+8. Footer
+8.A Static Links
+Issue: The footer contains three important legal/policy links (Privacy Policy, Terms of Service, and Cookie Settings) that are not functional - they do not navigate anywhere when clicked.
+Expected Behavior:
+* Privacy Policy link should navigate to the site's privacy policy page
+* Terms of Service link should navigate to the terms of service page
+* Cookie Settings link should either open cookie preference modal or navigate to cookie settings page
+Actual Behavior:
+* Clicking produces no navigation action
+Required Fix:
+* Add proper routing for each footer link
+8.B Growth Tap Digital Logo
+Issue: The Growth Tap Digital logo in the footer should link to the Growth Tap Digital website or page, but currently has no link assigned.
+Expected Behavior:
+* Logo should be clickable
+* Clicking logo should navigate to Growth Tap Digital's website or designated landing page
+* Link should open in new tab (target="_blank") to keep users on site
+* Appropriate hover state should indicate logo is clickable
+Actual Behavior:
+* No Logo appears 
+* No link or navigation associated with logo
+
+
+
+
+
+
+Required Fix:
+* Add hyperlink to Growth Tap Digital logo
+* Configure link to open in new tab
+* Verify destination URL is correct and active
+
+
+9. Mobile Responsive
+9.A Menu Items Unclickable
+Issue: On mobile devices, both primary menu items and submenu items do not respond to touch/click events, preventing mobile users from navigating the site.
+Expected Behavior:
+* All menu items should be tappable and navigate correctly
+* Touch targets should be appropriately sized for mobile (minimum 44x44px recommended)
+* Menu should close when item is selected or close button is tapped
+Actual Behavior:
+* Menu items do not respond to tap events
+Required Fix:
+* Debug mobile menu event handling
+* Ensure proper touch event listeners are attached
+* Check for CSS issues preventing clicks (z-index, pointer-events, etc.)
+* Test on actual mobile devices
+General Note: During testing, it has been observed that various buttons and pages across the site appear to be static or non-functional beyond those explicitly documented here.
+Check All buttons across the site (CTAs, form submissions, navigation)
+* All links in headers, footers, and content areas
+* All form fields and their submission handlers
+* All interactive components (dropdowns, toggles, modals)
+* All navigation elements across different page types
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+10. Admin Portal
+10.A Orders
+i. Create Shipping Label
+Issue: When clicking "Create Shipping Label" for an order, the shipping options dialog/section does not appear, preventing the admin from selecting a shipping method and carrier.
+Expected Behavior: When admin clicks "Create Shipping Label":
+1. System fetches current shipping rates from configured shipping provider(s)
+2. Display modal or section showing available shipping options including:
+   * Carrier names (USPS, UPS, FedEx, etc.)
+   * Service levels (Ground, Priority, Express, etc.)
+   * Estimated delivery times
+   * Shipping costs for each option
+   * Any special services available (insurance, signature, etc.)
+3. Admin can compare options and select preferred shipping method
+4. System validates selection and proceeds to label purchase
+5. Appropriate loading states during rate fetching
+Actual Behavior:
+* No shipping options are displayed when button is clicked
+Required Fix:
+* Implement rate-fetching API integration with shipping provider
+* Add proper error handling if rate fetch fails
+* Verify API credentials and configuration are correct
+ii. Buy Shipping Label
+Issue: After purchasing a shipping label, the print dialog or print software does not automatically open
+Expected Behavior: When admin completes shipping label purchase:
+1. System processes payment/label purchase with carrier
+2. Label is successfully created and associated with order
+3. Print dialog automatically opens with shipping label ready to print
+4. Alternatively, print software (if integrated) launches automatically
+5. Label should be formatted correctly for standard label printers
+6. Admin can print immediately or save/download label PDF for later
+Actual Behavior:
+* Label purchase may complete but no print action is triggered
+* Workflow is interrupted and inefficient
+* May require multiple clicks to find and print label
+
+
+
+
+Required Fix:
+* Implement automatic print rendering after successful label purchase
+* Use browser print API to trigger print dialog automatically
+* Ensure label is properly formatted for printing (correct size, orientation)
+* Provide fallback download option if auto-print fails
+* Add clear success messaging with manual print option
+10.B Dashboard
+Issue: The order statistics and profit charts displayed on the admin dashboard are showing static placeholder data instead of actual website order information and financial metrics.
+Expected Behavior: Dashboard should display real-time or recent data including:
+* Order metrics:
+   * Total orders (today, this week, this month, all time)
+   * Order trends over time (line/bar charts)
+* Financial metrics:
+   * Revenue (gross and net)
+   * Profit margins
+* Other relevant metrics:
+   * Top-selling products
+* All charts and numbers should update based on actual database data
+* Date range filters should allow viewing different time periods
+Actual Behavior:
+* Charts display generic placeholder data
+* Dashboard is not connected to real order data
+Required Fix:
+* Connect dashboard queries to actual order database tables
+* Implement data aggregation for metrics calculation
+* Test calculations for accuracy against actual order data
+10.C Product Tab - Missing Required Shipping Fields
+Issue: The product catalog/editing interface is missing three critical fields required for successful shipping label creation and international customs compliance. These missing fields are: Shipping Weight, Country of Origin, and Harmonized System (HS) Code. Without these fields, international shipments cannot be processed correctly, and label creation through Stallion Express will fail or result in shipment delays and customs issues.
+Expected Behavior:
+For Product Entry:
+* When admin creates or edits a product, they must be able to enter:
+
+   * Shipping Weight: Product weight in grams or kilograms (required for all shipping)
+   * Country of Origin: The country where the product was manufactured/produced (required for customs)
+   * HS Code: 6-10 digit Harmonized System classification code (required for international shipping)
+   * Each field should have:
+   * Input validation (weight must be positive number, HS code must match format requirements)
+   * Mandatory indicators showing these fields must be completed
+For Shipping Label Creation: When admin creates a shipping label for an order:
+   1. System fetches all product data for items in the order
+   2. System calculates total package weight:
+   * Sum of all product weights in the order
+   * Plus packaging material weight (box, padding, etc.)
+   * Total weight calculated automatically
+   3. System assembles complete shipping data payload including:
+   * Each line item with product description
+   * Quantity of each product
+   * Individual product weights
+   * Country of origin for each product
+   * HS code for each product (especially critical for international)
+   4. System sends this data to Stallion Express API with proper formatting
+   5. Validation before label creation:
+   * If ANY product is missing weight, country of origin, or HS code, system blocks label creation
+   * Clear error message displays: "Cannot create label: Product [SKU/Name] is missing required shipping data"
+   * Admin is directed to product edit page to complete missing information
+   6. Only when all data is complete does label creation proceed
+For International Shipments (Critical):
+   * Country of Origin and HS Code are legally required for customs documentation
+   * These fields are NOT printed on the shipping label itself
+   * These fields are transmitted to Stallion Express who forwards them to the carrier (USPS, UPS, etc.)
+   * Carrier uses this data to generate customs forms (CN22, CN23, commercial invoices)
+   * Incorrect or missing data can result in:
+   * Shipment rejection at customs
+   * Shipment delays and additional fees
+   * Fines for non-compliance
+   * Inability to clear customs, requiring return to sender
+Actual Behavior:
+   * Product catalog UI has no fields for weight, country of origin, or HS code
+   * Product database schema does not include these fields
+   * Product data cannot be captured during product creation
+   * When label creation is attempted:
+   * System cannot retrieve required shipping data
+   * Payload sent to Stallion Express is incomplete
+   * International shipments cannot be processed properly
+   * Customs documentation cannot be generated
+   * Admin has no way to enter this critical shipping information
+Required Fix:
+Phase 1 - Database & Data Model:
+   * Update product database schema to add three new fields:
+   * shipping_weight (decimal, required, must be > 0)
+   * country_of_origin (string/varchar, required, validate against ISO country codes)
+   * hs_code (string/varchar, required for international products, validate format)
+   * Run database migration to add these columns to product table
+   * Decide how to handle existing products (require data entry or set defaults?)
+Phase 2 - Admin UI:
+   * Add three new fields to product creation/edit form:
+
+      * Shipping Weight field:
+      * Input type: number with decimal support
+      * Label: "Shipping Weight (grams)"
+      * Validation: Must be greater than 0
+      * Help text: "Enter the product weight used for shipping calculations"
+      * Country of Origin field:
+      * Input type: dropdown/select or autocomplete
+      * Label: "Country of Origin"
+      * Populate with ISO country list
+      * Help text: "Select the country where this product is manufactured"
+      * HS Code field:
+      * Input type: text input
+      * Label: "HS Code (Harmonized System)"
+      * Validation: 6-10 digits, specific format depending on destination
+      * Help text: "Enter the classification code for customs. Find codes at hts.usitc.gov or similar resources"
+      * Consider adding HS code lookup helper or link to reference
+      * Make fields visually prominent and clearly marked as required
+
+      * Implement client-side and server-side validation
+
+      * Show validation errors clearly if fields are incomplete
+
+Phase 3 - Label Creation Logic:
+         * Update order-to-shipment processing workflow:
+
+            * When "Create Shipping Label" is clicked, first validate all products in order have required fields
+            * If validation fails:
+            * Block label creation process
+            * Display specific error: "Missing required shipping data for product(s): [list products with missing data]"
+            * Provide quick links to edit those products
+            * Do not proceed until data is complete
+            * If validation passes, continue to rate fetching
+            * Update weight calculation function:
+
+total_weight = sum(product.shipping_weight * quantity for each item) + packaging_weight
+               * Packaging weight should be configurable (default or per-order)
+               * Validate total weight is reasonable (not zero, not impossibly high)
+               * Update Stallion Express API payload:
+
+                  * Include line item details with all required fields
+                  * Format according to Stallion Express API documentation
+                  * Example payload structure (verify with actual API docs):
+{  "order_id": "12345",  "items": [    {      "sku": "PROD-001",      "description": "Silver Bangle Bracelet",      "quantity": 2,      "weight": 45.5,      "country_of_origin": "IN",      "hs_code": "711319"    }  ],  "total_weight": 95,  "destination": {...},  ...}
+Phase 4 - Error Handling & Admin Alerts:
+                  * Create admin notification system for missing product data
+                  * When products are created without shipping fields, flag them
+                  * Add dashboard widget or report showing products missing required fields
+                  * Allow bulk editing of shipping data for existing products
+                  * Provide data entry templates or CSV import for updating many products
+Phase 5 - Testing & Validation:
+                  * Test with products that have all required fields → label creation should succeed
+                  * Test with products missing one or more fields → should block and show clear error
+                  * Test weight calculation with multiple quantities
+                  * Test actual label creation with Stallion Express (requires test/sandbox environment)
+                  * Verify customs documentation is generated correctly for international shipments
+Implementation Notes:
+About Stallion Express Requirements: Based on Stallion Express documentation and customs requirements:
+                  * For US-bound shipments, accurate Country of Origin must be provided in shipping data
+                  * For international shipments, valid HS Code is mandatory for each product
+                  * HS Codes are used by customs authorities to:
+                  * Classify goods for tariff purposes
+                  * Calculate duties and taxes
+                  * Apply trade restrictions or quotas
+                  * Generate proper customs declaration forms
+                  * Weight must be accurate as carriers verify package weight and may adjust charges for discrepancies
+Technical Considerations:
+                  * Confirm with developer whether Stallion Express integration is direct API calls or through middleware (Shippo, EasyPost, etc.)
+                  * Verify API endpoint and authentication are correctly configured
+                  * Consider implementing caching for HS codes once entered (products in same category often share codes)
+                  * For HS code validation, consider integrating with HS code database or validation service
+                  * Be aware: HS codes can vary slightly by destination country (first 6 digits are universal, additional digits may vary)
+Testing Limitation: Currently, there is no way to test the complete "Create and Buy Labels" functionality in a development or staging environment. This means:
+                  * Developer should confirm with Stallion Express if they provide a sandbox/test environment
+                  * If no sandbox exists, testing must use extreme caution to avoid creating real labels with real charges
+                  * Consider implementing mock/dry-run mode for testing without actually purchasing labels
+                  * Thorough validation and error checking is critical before production deployment
+User Experience Considerations:
+                  * Entering HS codes can be complex for non-technical users
+                  * Consider providing:
+                  * HS code lookup tool or integration
+                  * Pre-populated common HS codes for jewelry/bangles
+                  * Documentation or help articles explaining how to find correct codes
+                  * Support contact if admin is unsure about classification
+                  * Country of Origin should be straightforward dropdown - use full country names, not just codes
+                  * Weight should allow decimal precision (jewelry items often measured in grams with decimals)
+10.D Catalogs (Admin Section)
+Issue: In the Admin Portal under the Catalogs section, there are no controls or interface elements to manage the content that appears on the customer-facing Catalogs Page. Admins cannot select between categories, change images, or edit text, making the entire Catalogs Page unmanageable without developer intervention.
+Context: The Catalogs section in the admin should provide tools to manage how the customer-facing Catalogs Page appears. The Catalogs Page displays three categories of jewelry and bundle products, and admins need to be able to control the content for each category.
+Expected Behavior:
+When admin navigates to Admin Portal → Catalogs:
+                  * Category Selection Interface:
+
+                     * Allow admin to select categories for catalogs
+                     * Allow admin to click/select each category to manage its content
+
+
+
+
+
+
+Actual Behavior:
+                     * Admin Catalogs section provides no category selection interface
+                     * No image upload or change functionality exists
+                     * No text editing capabilities are present
+Required Fix:
+Backend Requirements:
+                     * Ensure database has proper structure for storing catalog category data:
+                     * Category names/identifiers
+                     * Category images (file paths or URLs)
+                     * Category text/descriptions
+                     * Any display order or priority fields
+                     * Implement API endpoints for:
+                     * GET: Fetch all categories and their current data
+                     * PUT/PATCH: Update category image
+                     * PUT/PATCH: Update category text
+                     * Proper authentication and authorization
+11. Catalogs Page (Customer-Facing)
+Context: This section addresses the customer-facing storefront Catalogs Page where users browse and select from three categories of jewelry and bundle products. This is separate from the admin interface discussed in Section 10.D.
+Issue: The Catalogs Page is missing title and description fields for category pages. Specifically, all category pages lack these important content elements except for the "Most Gifted" page which does display them. This is distinct from the hero section's title and description - these are specific title and description fields that should appear within each category page's main content area.
+Expected Behavior:
+                     * Each of the three category pages should display:
+                     * Category Title: Clear, prominent heading identifying the category
+                     * Category Description: Brief text explaining what types of products are in this category, helping users understand what they'll find
+                     * These elements should appear consistently across all three category pages
+
+
+Actual Behavior:
+                     * All three category tabs  are completely missing title and description elements
+                     * Only the "Most Gifted" page correctly displays title and description
+
+
+
+
+
+
+
+
+Required Fix:
+Frontend Template/Component:
+                     * Update category page template to include title and description sections
+                     * Ensure these elements are present for all three category pages
+                     * Make responsive for mobile devices
+Data/Content Management:
+                     * Ensure title and description fields exist in database for each category
+                     * Connect template to proper data source (database query or CMS)
+Admin Integration:
+                     * This fix should work in conjunction with Section 10.D
+                     * Once admin controls are implemented (10.D), admins should be able to edit these titles and descriptions
+Verification Steps:
+                     * Check all three category tabs
+                     * Confirm title and description appear on each
+Summary
+This document has identified issues across 11 major sections of the website, ranging from frontend customer experience problems to critical backend administrative functionality gaps. Priority should be given to:
+                     1. Section 10.C (Product Shipping Fields) - Critical for shipping operations and legal compliance
+                     2. Section 9 (Mobile Responsiveness) - Affects all mobile users' ability to navigate
+                     3. Section 7 (Customer Portal) - Multiple issues affecting user account management
+                     4. Section 10.A (Shipping Label Creation) - Blocks order fulfillment workflow
