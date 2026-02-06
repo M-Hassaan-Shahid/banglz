@@ -205,11 +205,25 @@ class ProductsController extends Controller
                     break;
 
                 case 'price-asc':
-                    $query->orderByRaw("COALESCE(LEAST({$effectiveProductPrice}, pv.min_price), 999999999) ASC");
+                    // Sort by the minimum price between product price and variation min price
+                    $query->orderByRaw("
+                        CASE
+                            WHEN pv.min_price IS NOT NULL AND pv.min_price < ({$effectiveProductPrice})
+                            THEN pv.min_price
+                            ELSE ({$effectiveProductPrice})
+                        END ASC
+                    ");
                     break;
 
                 case 'price-desc':
-                    $query->orderByRaw("COALESCE(GREATEST({$effectiveProductPrice}, pv.max_price), -1) DESC");
+                    // Sort by the maximum price between product price and variation max price
+                    $query->orderByRaw("
+                        CASE
+                            WHEN pv.max_price IS NOT NULL AND pv.max_price > ({$effectiveProductPrice})
+                            THEN pv.max_price
+                            ELSE ({$effectiveProductPrice})
+                        END DESC
+                    ");
                     break;
 
                 default:

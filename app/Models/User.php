@@ -32,7 +32,12 @@ class User extends Authenticatable
         'total_points',
         'total_shippings',
         'is_guest',
-        'customer_id'
+        'customer_id',
+        'email_subscribed',
+        'marketing_emails',
+        'order_updates',
+        'newsletter',
+        'product_recommendations',
     ];
 
     /**
@@ -53,6 +58,11 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'email_subscribed' => 'boolean',
+        'marketing_emails' => 'boolean',
+        'order_updates' => 'boolean',
+        'newsletter' => 'boolean',
+        'product_recommendations' => 'boolean',
     ];
     public function cards()
     {
@@ -61,5 +71,21 @@ class User extends Authenticatable
     public function orders()
     {
         return $this->hasMany(Order::class);
+    }
+
+    /**
+     * Get all addresses for the user.
+     */
+    public function addresses()
+    {
+        return $this->hasMany(Address::class);
+    }
+
+    /**
+     * Check if user can add more addresses (max 3).
+     */
+    public function canAddAddress(): bool
+    {
+        return $this->addresses()->count() < 3;
     }
 }

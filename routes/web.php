@@ -137,6 +137,25 @@ Route::middleware(['auth:web'])->group(function () {
     })->name('personal-account');
     Route::post('/profile/update', [ControllersAuthController::class, 'updateField'])
         ->name('profile.update');
+    
+    // Address Management Routes
+    Route::resource('addresses', \App\Http\Controllers\AddressController::class)->except(['show']);
+    
+    // Password Management Routes
+    Route::get('password/change', [\App\Http\Controllers\PasswordController::class, 'edit'])
+        ->name('password.edit');
+    Route::put('password/change', [\App\Http\Controllers\PasswordController::class, 'update'])
+        ->name('password.update');
+    
+    // Communication Preferences Routes
+    Route::get('preferences', [\App\Http\Controllers\PreferenceController::class, 'edit'])
+        ->name('preferences.edit');
+    Route::put('preferences', [\App\Http\Controllers\PreferenceController::class, 'update'])
+        ->name('preferences.update');
+    
+    // Subscription Management Route
+    Route::post('subscription/toggle', [\App\Http\Controllers\SubscriptionController::class, 'toggle'])
+        ->name('subscription.toggle');
 });
 Route::post('logout', [ControllersAuthController::class, 'logout'])->name('user.logout');
 Route::get('category-details/{id}', [ProductController::class, 'details'])->name('category.show.details');

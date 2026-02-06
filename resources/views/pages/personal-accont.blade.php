@@ -2849,6 +2849,69 @@
                     }
                 });
             });
+
+            // Subscription Toggle Functionality
+            $(document).on('click', '#subscription-toggle-btn', function(e) {
+                e.preventDefault();
+                
+                const btn = $(this);
+                const originalText = btn.text();
+                
+                // Disable button and show loading
+                btn.prop('disabled', true).text('Processing...');
+                
+                $.ajax({
+                    url: "{{ route('subscription.toggle') }}",
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Update button text
+                            btn.text(response.subscribed ? 'Unsubscribe' : 'Subscribe');
+                            
+                            // Update status text
+                            $('#subscription-status').text(response.subscribed ? 'Subscribed' : 'Unsubscribed');
+                            
+                            // Show success message
+                            $('#subscription-message')
+                                .removeClass('alert-danger')
+                                .addClass('alert-success')
+                                .text(response.message)
+                                .fadeIn()
+                                .delay(3000)
+                                .fadeOut();
+                        } else {
+                            // Show error message
+                            $('#subscription-message')
+                                .removeClass('alert-success')
+                                .addClass('alert-danger')
+                                .text(response.message || 'Failed to update subscription status.')
+                                .fadeIn()
+                                .delay(3000)
+                                .fadeOut();
+                            
+                            btn.text(originalText);
+                        }
+                    },
+                    error: function(xhr) {
+                        // Show error message
+                        $('#subscription-message')
+                            .removeClass('alert-success')
+                            .addClass('alert-danger')
+                            .text('An error occurred. Please try again.')
+                            .fadeIn()
+                            .delay(3000)
+                            .fadeOut();
+                        
+                        btn.text(originalText);
+                    },
+                    complete: function() {
+                        btn.prop('disabled', false);
+                    }
+                });
+            });
         </script>
     </x-slot>
 </x-layouts.user-default>

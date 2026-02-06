@@ -207,7 +207,7 @@
                 <button type="submit" style="background: none; border: none; cursor: pointer; padding: 0;">
                     <img class="search-icon" src="{{ asset('assets/images/search.png') }}" alt="icon missing" />
                 </button>
-                <input type="text" name="q" class="search-input" placeholder="Search..." required>
+                <input type="search" name="q" class="search-input" placeholder="Search..." autocomplete="off" value="" required>
             </form>
 
         </div>

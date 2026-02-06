@@ -11,6 +11,32 @@
     /* z-index: 110000 !important; */
     margin-top: 110px !important;
   }
+  
+  .footer-growth-tap {
+    margin-top: 15px;
+    text-align: center;
+  }
+  
+  .footer-growth-tap a {
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: opacity 0.3s ease;
+  }
+  
+  .footer-growth-tap a:hover {
+    opacity: 0.7;
+  }
+  
+  .footer-growth-tap strong {
+    font-size: 14px;
+  }
+  
+  @media (max-width: 768px) {
+    .footer-growth-tap {
+      margin-top: 10px;
+    }
+  }
 </style>
 
 
@@ -74,9 +100,9 @@
     <div class="footer-bottom-left">
       <p>© 2025 Bangles. All rights reserved.</p>
       <div class="footer-links">
-        <a href="#">Privacy Policy</a>
-        <a href="#">Terms of Service</a>
-        <a href="#">Cookie Settings</a>
+        <a href="{{ route('resource') }}#policy">Privacy Policy</a>
+        <a href="{{ route('resource') }}#terms">Terms of Service</a>
+        <a href="{{ route('resource') }}#cookies-policy">Cookie Settings</a>
       </div>
     </div>
     <div class="footer-social-icons">
@@ -85,6 +111,12 @@
       <a href="#"><i class="fab fa-pinterest-p"></i></a>
       <a href="#"><i class="fab fa-x-twitter"></i></a>
       <a href="#"><i class="fab fa-linkedin-in"></i></a>
+    </div>
+    <div class="footer-growth-tap">
+      <a href="https://growthtapdigital.com" target="_blank" rel="noopener noreferrer" title="Website by Growth Tap Digital">
+        <span style="font-size: 12px; color: #666;">Powered by</span>
+        <strong style="color: #8d5943; margin-left: 5px;">Growth Tap Digital</strong>
+      </a>
     </div>
   </div>
 </footer>

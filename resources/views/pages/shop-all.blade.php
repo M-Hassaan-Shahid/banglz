@@ -8,6 +8,42 @@
             .price span {
                 font-size: 16px;
             }
+
+            /* Filter toggle for mobile */
+            @media (max-width: 768px) {
+                .filter-section-main {
+                    position: fixed;
+                    left: -100%;
+                    top: 0;
+                    height: 100vh;
+                    width: 80%;
+                    max-width: 300px;
+                    background: white;
+                    z-index: 1000;
+                    overflow-y: auto;
+                    transition: left 0.3s ease;
+                    box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+                }
+
+                .filter-section-main.active {
+                    left: 0;
+                }
+
+                .filter-overlay {
+                    display: none;
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0,0,0,0.5);
+                    z-index: 999;
+                }
+
+                .filter-overlay.active {
+                    display: block;
+                }
+            }
         </style>
     </x-slot>
 
@@ -47,9 +83,9 @@
                     <div class="tab-main tab-pane active" id="products-pane">
                         <div class="main-earing-section">
                             {{-- FILTERS (COMMON) --}}
-                            <div class="filter-section-main">
+                            <div class="filter-section-main" id="filterSidebar">
                                 <div class="filter-header">
-                                    <div class="filter-header-left">
+                                    <div class="filter-header-left" id="filterToggleBtn" style="cursor: pointer;">
                                         Filter <img src="{{ asset('assets/images/filter-icon.png') }}" alt="" />
                                     </div>
                                     <div class="filter-header-right" id="clearAllBtn">Clear all</div>
@@ -143,6 +179,9 @@
 
 
                             </div>
+
+                            <!-- Filter overlay for mobile -->
+                            <div class="filter-overlay" id="filterOverlay"></div>
 
                             {{-- PRODUCTS --}}
                             <div class="earing-products">
@@ -435,6 +474,25 @@
                     clearTimeout(t);
                     t = setTimeout(() => fn.apply(this, args), wait);
                 };
+            }
+
+            // Filter toggle functionality for mobile
+            const filterToggleBtn = document.getElementById('filterToggleBtn');
+            const filterSidebar = document.getElementById('filterSidebar');
+            const filterOverlay = document.getElementById('filterOverlay');
+
+            if (filterToggleBtn && filterSidebar && filterOverlay) {
+                // Toggle filter sidebar
+                filterToggleBtn.addEventListener('click', function() {
+                    filterSidebar.classList.toggle('active');
+                    filterOverlay.classList.toggle('active');
+                });
+
+                // Close filter when clicking overlay
+                filterOverlay.addEventListener('click', function() {
+                    filterSidebar.classList.remove('active');
+                    filterOverlay.classList.remove('active');
+                });
             }
 
             // Toggle filter sections
