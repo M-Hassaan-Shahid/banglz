@@ -107,8 +107,14 @@ npm install
 
 Copy the example environment file and configure it:
 
-```bash
-cp .env.example .env
+**Windows (Command Prompt):**
+```cmd
+copy .env.example .env
+```
+
+**Windows (PowerShell):**
+```powershell
+Copy-Item .env.example .env
 ```
 
 Edit `.env` file with your configuration:
@@ -126,15 +132,24 @@ DB_DATABASE=banglz
 DB_USERNAME=your_database_user
 DB_PASSWORD=your_database_password
 
+# Gmail SMTP Configuration
 MAIL_MAILER=smtp
-MAIL_HOST=your_mail_host
+MAIL_HOST=smtp.gmail.com
 MAIL_PORT=587
-MAIL_USERNAME=your_mail_username
-MAIL_PASSWORD=your_mail_password
+MAIL_USERNAME=your_gmail@gmail.com
+MAIL_PASSWORD=your_app_password
 MAIL_ENCRYPTION=tls
-MAIL_FROM_ADDRESS="noreply@banglz.com"
+MAIL_FROM_ADDRESS="your_gmail@gmail.com"
 MAIL_FROM_NAME="${APP_NAME}"
 ```
+
+**Important Gmail Setup:**
+1. Enable 2-Step Verification on your Gmail account
+2. Generate an App Password:
+   - Go to Google Account → Security → 2-Step Verification → App passwords
+   - Select "Mail" and "Windows Computer"
+   - Copy the 16-character password
+   - Use this password in `MAIL_PASSWORD` (without spaces)
 
 ### 5. Generate Application Key
 
@@ -158,20 +173,31 @@ npm run dev
 
 ### 1. Create Database
 
-**For MySQL/MariaDB:**
+**For Windows with MySQL:**
 
-```bash
-# Login to MySQL
-sudo mysql -u root -p
+Open MySQL Command Line Client or use phpMyAdmin, then run:
 
-# Create database
+```sql
+-- Create database
 CREATE DATABASE banglz CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-# Create user (optional but recommended)
-CREATE USER 'banglz_user'@'localhost' IDENTIFIED BY 'your_secure_password';
+-- Create user (optional but recommended)
+CREATE USER 'banglz_user'@'localhost' IDENTIFIED BY 'banglz_password';
 GRANT ALL PRIVILEGES ON banglz.* TO 'banglz_user'@'localhost';
 FLUSH PRIVILEGES;
-EXIT;
+```
+
+**Using Command Prompt:**
+```cmd
+mysql -u root -p
+```
+Then enter the SQL commands above.
+
+Update your `.env` file:
+```env
+DB_DATABASE=banglz
+DB_USERNAME=banglz_user
+DB_PASSWORD=banglz_password
 ```
 
 ### 2. Run Migrations
@@ -206,9 +232,19 @@ This will seed:
 
 ### 4. Create Storage Link
 
-```bash
+**Windows (Command Prompt - Run as Administrator):**
+```cmd
 php artisan storage:link
 ```
+
+**Windows (PowerShell - Run as Administrator):**
+```powershell
+php artisan storage:link
+```
+
+If you get a symlink error on Windows, you may need to:
+1. Run Command Prompt or PowerShell as Administrator
+2. Or manually copy files from `storage/app/public` to `public/storage`
 
 ## 🚀 Running the Application
 
@@ -422,12 +458,15 @@ Restart your web server after installation.
 
 #### 3. "The stream or file could not be opened"
 
-**Solution**: Fix storage permissions:
+**Solution for Windows**: Fix storage permissions:
 
-```bash
-chmod -R 775 storage bootstrap/cache
-chown -R www-data:www-data storage bootstrap/cache
+**Using Command Prompt (Run as Administrator):**
+```cmd
+icacls storage /grant Users:(OI)(CI)F /T
+icacls bootstrap\cache /grant Users:(OI)(CI)F /T
 ```
+
+**Or manually**: Right-click on `storage` and `bootstrap/cache` folders → Properties → Security → Edit → Add "Full Control" for your user.
 
 #### 4. "419 Page Expired" on form submission
 
@@ -465,6 +504,45 @@ If the migration exists but wasn't run, check migration status:
 php artisan migrate:status
 ```
 
+#### 7. Gmail Email Not Sending
+
+**Solution**: 
+1. Verify Gmail App Password is correct (16 characters, no spaces)
+2. Check `.env` configuration:
+   ```env
+   MAIL_MAILER=smtp
+   MAIL_HOST=smtp.gmail.com
+   MAIL_PORT=587
+   MAIL_USERNAME=your_gmail@gmail.com
+   MAIL_PASSWORD=your_16_char_app_password
+   MAIL_ENCRYPTION=tls
+   ```
+3. Clear config cache:
+   ```bash
+   php artisan config:clear
+   php artisan config:cache
+   ```
+4. Test email sending:
+   ```bash
+   php artisan tinker
+   Mail::raw('Test email', function($msg) { $msg->to('test@example.com')->subject('Test'); });
+   ```
+5. Check `storage/logs/laravel.log` for errors
+
+#### 8. Port 8000 Already in Use (Windows)
+
+**Solution**: Find and kill the process using port 8000:
+
+```cmd
+netstat -ano | findstr :8000
+taskkill /PID <process_id> /F
+```
+
+Or use a different port:
+```bash
+php artisan serve --port=8080
+```
+
 ### Performance Optimization
 
 #### 1. Cache Configuration
@@ -475,15 +553,23 @@ php artisan route:cache
 php artisan view:cache
 ```
 
+**Clear cache (if needed):**
+```bash
+php artisan cache:clear
+php artisan config:clear
+php artisan route:clear
+php artisan view:clear
+```
+
 #### 2. Optimize Autoloader
 
 ```bash
 composer install --optimize-autoloader --no-dev
 ```
 
-#### 3. Enable OPcache
+#### 3. Enable OPcache (Windows with XAMPP/WAMP)
 
-Edit `php.ini`:
+Edit `php.ini` (usually in `C:\xampp\php\php.ini` or `C:\wamp64\bin\php\phpX.X.X\php.ini`):
 
 ```ini
 opcache.enable=1
@@ -492,6 +578,8 @@ opcache.interned_strings_buffer=8
 opcache.max_accelerated_files=4000
 opcache.revalidate_freq=60
 ```
+
+Restart Apache after making changes.
 
 ## 🤝 Contributing
 
