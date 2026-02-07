@@ -106,7 +106,7 @@
       </div>
     </div>
     <div class="footer-social-icons">
-      <a href="#"><img src="{{ asset('assets/images/facebook.png') }}" alt=""></a>
+      <a href="#"><i class="fab fa-facebook-f"></i></a>
       <a href="#"><i class="fab fa-instagram"></i></a>
       <a href="#"><i class="fab fa-pinterest-p"></i></a>
       <a href="#"><i class="fab fa-x-twitter"></i></a>
