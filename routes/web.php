@@ -157,6 +157,17 @@ Route::middleware(['auth:web'])->group(function () {
     Route::post('subscription/toggle', [\App\Http\Controllers\SubscriptionController::class, 'toggle'])
         ->name('subscription.toggle');
 });
+
+// Public Subscription Management Routes (no auth required)
+Route::get('subscription/manage', [\App\Http\Controllers\SubscriptionController::class, 'index'])
+    ->name('subscription.manage');
+Route::post('subscription/check', [\App\Http\Controllers\SubscriptionController::class, 'checkStatus'])
+    ->name('subscription.check');
+Route::post('subscription/unsubscribe', [\App\Http\Controllers\SubscriptionController::class, 'unsubscribe'])
+    ->name('subscription.unsubscribe');
+Route::post('subscription/subscribe', [\App\Http\Controllers\SubscriptionController::class, 'subscribe'])
+    ->name('subscription.subscribe');
+
 Route::post('logout', [ControllersAuthController::class, 'logout'])->name('user.logout');
 Route::get('category-details/{id}', [ProductController::class, 'details'])->name('category.show.details');
 

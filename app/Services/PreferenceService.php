@@ -51,7 +51,7 @@ class PreferenceService
     public function sendPreferencesUpdatedNotification(User $user, array $preferences): void
     {
         try {
-            Mail::to($user->email)->queue(new PreferencesUpdatedMail($user, $preferences));
+            Mail::to($user->email)->send(new PreferencesUpdatedMail($user, $preferences));
         } catch (\Exception $e) {
             // Log the error but don't throw exception to avoid blocking user workflow
             \Log::error('Failed to send preferences updated email', [

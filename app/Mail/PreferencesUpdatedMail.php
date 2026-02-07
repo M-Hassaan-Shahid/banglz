@@ -10,7 +10,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class PreferencesUpdatedMail extends Mailable implements ShouldQueue
+class PreferencesUpdatedMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -73,7 +73,7 @@ class PreferencesUpdatedMail extends Mailable implements ShouldQueue
             if (isset($labels[$key])) {
                 $formatted[] = [
                     'label' => $labels[$key],
-                    'value' => $value ? 'Enabled' : 'Disabled',
+                    'value' => (bool)$value ? 'Enabled' : 'Disabled',
                 ];
             }
         }

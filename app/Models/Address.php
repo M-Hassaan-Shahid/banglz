@@ -16,10 +16,12 @@ class Address extends Model
         'user_id',
         'recipient_name',
         'street_address',
+        'apartment',
         'city',
         'state',
         'postal_code',
         'country',
+        'phone',
     ];
 
     protected $casts = [

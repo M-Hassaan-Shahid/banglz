@@ -28,12 +28,19 @@ class PasswordController extends Controller
     /**
      * Process the password change request.
      */
-    public function update(ChangePasswordRequest $request): RedirectResponse
+    public function update(ChangePasswordRequest $request)
     {
         $user = auth()->user();
 
         // Verify current password
         if (!$this->passwordService->verifyCurrentPassword($user, $request->current_password)) {
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Current password is incorrect.'
+                ], 422);
+            }
+            
             return redirect()->back()
                 ->withErrors(['current_password' => 'Current password is incorrect.'])
                 ->withInput();
@@ -46,9 +53,25 @@ class PasswordController extends Controller
             // Send confirmation email
             $this->passwordService->sendPasswordChangedNotification($user);
 
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Password changed successfully. A confirmation email has been sent to your email address.'
+                ]);
+            }
+
             return redirect()->route('password.edit')
                 ->with('success', 'Password changed successfully. A confirmation email has been sent to your email address.');
         } catch (\Exception $e) {
+            \Log::error('Password change error', ['error' => $e->getMessage()]);
+            
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to change password. Please try again.'
+                ], 500);
+            }
+            
             return redirect()->back()
                 ->with('error', 'Failed to change password. Please try again.')
                 ->withInput();

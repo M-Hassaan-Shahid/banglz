@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class UpdatePreferencesRequest extends FormRequest
 {
@@ -57,5 +59,28 @@ class UpdatePreferencesRequest extends FormRequest
             'newsletter' => 'newsletter',
             'product_recommendations' => 'product recommendations',
         ];
+    }
+
+    /**
+     * Handle a failed validation attempt for AJAX requests.
+     *
+     * @param  \Illuminate\Contracts\Validation\Validator  $validator
+     * @return void
+     *
+     * @throws \Illuminate\Http\Exceptions\HttpResponseException
+     */
+    protected function failedValidation(Validator $validator)
+    {
+        if ($this->wantsJson() || $this->ajax()) {
+            throw new HttpResponseException(
+                response()->json([
+                    'success' => false,
+                    'message' => $validator->errors()->first(),
+                    'errors' => $validator->errors()
+                ], 422)
+            );
+        }
+
+        parent::failedValidation($validator);
     }
 }

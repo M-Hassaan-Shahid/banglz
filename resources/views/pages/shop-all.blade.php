@@ -9,8 +9,65 @@
                 font-size: 16px;
             }
 
-            /* Filter toggle for mobile */
+            /* Mobile Filter Toggle Button */
+            .mobile-filter-toggle {
+                display: none;
+            }
+
+            .filter-toggle-btn {
+                display: inline-flex !important;
+                align-items: center;
+                gap: 8px;
+                padding: 8px 16px !important;
+                background-color: #8d5943;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                font-size: 14px;
+                font-weight: 500;
+                cursor: pointer;
+                height: auto !important;
+                line-height: 1.2;
+                white-space: nowrap;
+            }
+
+            .filter-toggle-btn img {
+                width: 14px !important;
+                height: 14px !important;
+                filter: brightness(0) invert(1);
+                flex-shrink: 0;
+            }
+
+            /* Desktop: Hide mobile toggle, filters always visible */
+            @media (min-width: 769px) {
+                .mobile-filter-toggle {
+                    display: none !important;
+                }
+                
+                .filter-header-left {
+                    display: none !important;
+                }
+            }
+
+            /* Mobile: Show toggle button, hide filters by default */
             @media (max-width: 768px) {
+                .mobile-filter-toggle {
+                    display: block;
+                }
+
+                .sort-container {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    justify-content: space-between;
+                    flex-wrap: nowrap;
+                }
+
+                .sort-container select {
+                    flex: 1;
+                    min-width: 0;
+                }
+
                 .filter-section-main {
                     position: fixed;
                     left: -100%;
@@ -82,10 +139,11 @@
                     {{-- Single pane now — filters are common and product list updates via AJAX --}}
                     <div class="tab-main tab-pane active" id="products-pane">
                         <div class="main-earing-section">
+                            
                             {{-- FILTERS (COMMON) --}}
                             <div class="filter-section-main" id="filterSidebar">
                                 <div class="filter-header">
-                                    <div class="filter-header-left" id="filterToggleBtn" style="cursor: pointer;">
+                                    <div class="filter-header-left">
                                         Filter <img src="{{ asset('assets/images/filter-icon.png') }}" alt="" />
                                     </div>
                                     <div class="filter-header-right" id="clearAllBtn">Clear all</div>
@@ -186,6 +244,14 @@
                             {{-- PRODUCTS --}}
                             <div class="earing-products">
                                 <div class="sort-container">
+                                    {{-- Mobile Filter Toggle Button --}}
+                                    <div class="mobile-filter-toggle" id="mobileFilterToggle">
+                                        <button type="button" class="filter-toggle-btn">
+                                            <img src="{{ asset('assets/images/filter-icon.png') }}" alt="" />
+                                            Filter
+                                        </button>
+                                    </div>
+
                                     <select id="sortOptions" name="sort">
                                         <option value="default" {{ request('sort') == 'default' ? 'selected' : '' }}>Sort</option>
                                         <option value="name-asc" {{ request('sort') == 'name-asc' ? 'selected' : '' }}>Name (A-Z)</option>
@@ -477,7 +543,8 @@
             }
 
             // Filter toggle functionality for mobile
-            const filterToggleBtn = document.getElementById('filterToggleBtn');
+            const mobileFilterToggle = document.getElementById('mobileFilterToggle');
+            const filterToggleBtn = mobileFilterToggle ? mobileFilterToggle.querySelector('.filter-toggle-btn') : null;
             const filterSidebar = document.getElementById('filterSidebar');
             const filterOverlay = document.getElementById('filterOverlay');
 

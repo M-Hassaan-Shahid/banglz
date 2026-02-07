@@ -100,9 +100,9 @@
     <div class="footer-bottom-left">
       <p>© 2025 Bangles. All rights reserved.</p>
       <div class="footer-links">
-        <a href="{{ route('resource') }}#policy">Privacy Policy</a>
-        <a href="{{ route('resource') }}#terms">Terms of Service</a>
-        <a href="{{ route('resource') }}#cookies-policy">Cookie Settings</a>
+        <a href="{{ route('resource') }}?tab=policy">Privacy Policy</a>
+        <a href="{{ route('resource') }}?tab=terms">Terms of Service</a>
+        <a href="{{ route('resource') }}?tab=cookies-policy">Cookie Settings</a>
       </div>
     </div>
     <div class="footer-social-icons">

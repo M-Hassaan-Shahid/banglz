@@ -17,6 +17,48 @@
                                         <i class="fas fa-eye"></i>
                                     </span> -->
         <style>
+            /* Address card buttons - always visible */
+            #shipping-address .address-card-wrapper .card {
+                position: relative;
+            }
+            
+            #shipping-address .address-card-actions {
+                opacity: 1 !important;
+                visibility: visible !important;
+                display: block !important;
+            }
+            
+            #shipping-address .address-edit-btn,
+            #shipping-address .address-delete-btn {
+                opacity: 1 !important;
+                visibility: visible !important;
+                display: inline-block !important;
+                pointer-events: auto !important;
+                background-color: #8d5943 !important;
+                border-color: #8d5943 !important;
+                color: white !important;
+                transition: none !important;
+            }
+            
+            #shipping-address .address-edit-btn:hover,
+            #shipping-address .address-delete-btn:hover {
+                background-color: #8d5943 !important;
+                border-color: #8d5943 !important;
+                color: white !important;
+                opacity: 1 !important;
+            }
+            
+            #shipping-address .card-footer {
+                opacity: 1 !important;
+                visibility: visible !important;
+            }
+            
+            #shipping-address .card-footer .btn {
+                opacity: 1 !important;
+                visibility: visible !important;
+                display: inline-block !important;
+            }
+            
             /* Wrap each card with breathing space */
             .giftcard-card {
                 border: 1px solid #ddd;
@@ -386,6 +428,77 @@
 
             .input-field strong {
                 font-size: 12px;
+            }
+            
+            /* Communication Preferences Toggle Switches */
+            .preference-item {
+                padding: 15px 0;
+                border-bottom: 1px solid #eee;
+            }
+            
+            .preference-item:last-child {
+                border-bottom: none;
+            }
+            
+            .preference-item h5 {
+                font-size: 16px;
+                font-weight: 600;
+                margin-bottom: 4px;
+            }
+            
+            .preference-item .text-muted {
+                font-size: 14px;
+                color: #666;
+            }
+            
+            /* Custom Toggle Switch Styling */
+            .toggle-switch {
+                position: relative;
+                display: inline-block;
+                width: 50px;
+                height: 26px;
+            }
+            
+            .toggle-switch input[type="checkbox"] {
+                opacity: 0;
+                width: 0;
+                height: 0;
+            }
+            
+            .toggle-label {
+                position: absolute;
+                cursor: pointer;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: #ccc;
+                transition: 0.3s;
+                border-radius: 26px;
+            }
+            
+            .toggle-label:before {
+                position: absolute;
+                content: "";
+                height: 20px;
+                width: 20px;
+                left: 3px;
+                bottom: 3px;
+                background-color: white;
+                transition: 0.3s;
+                border-radius: 50%;
+            }
+            
+            .toggle-switch input:checked + .toggle-label {
+                background-color: #8d5943;
+            }
+            
+            .toggle-switch input:checked + .toggle-label:before {
+                transform: translateX(24px);
+            }
+            
+            .toggle-switch input:focus + .toggle-label {
+                box-shadow: 0 0 1px #8d5943;
             }
         </style>
     </x-slot>
@@ -1735,124 +1848,157 @@
                 <div class="side-content-tabs" id="shipping-address" style="display:none">
                     <div class="side-inner-content-main">
                         <div class="side-inner-content resource-content">
-
-                            {{-- no data for no data case--}}
-
-                            <div class="not-data-card">
-                                <div class="no-data-head">
-                                    <h1>Shipping Addresses</h1>
-                                </div>
-                                <div class="no-data-body">
-
-                                    <img src="{{ asset('assets/images/address.png') }}" alt="missing icon" />
-                                </div>
-                                <div class="no-data-footer">
-                                    <p>You currently don't have any addresses saved</p>
-                                </div>
-                                <div class="no-data-action-sec">
-                                    <p class="action-guest" data-bs-toggle="modal" data-bs-target="#addressModal"><strong>Add a credit or debit card for a faster checkout experience!</strong></p>
-
-                                </div>
+                            <div class="no-data-head mb-4">
+                                <h1>Shipping Addresses</h1>
                             </div>
 
+                            @php
+                                $userAddresses = Auth::user()->addresses ?? collect();
+                            @endphp
 
-                            <div class="card-info-fields address-main-scetion add-card mt-3">
-                                <div class="row">
-                                    <div class="col-6">
-                                        <div class="data-field ">
-                                            <p><strong>Full Name:</strong></p>
-                                            <p>Jhons smith</p>
+                            <div id="addresses-container">
+                                @if($userAddresses->isEmpty())
+                                    {{-- No addresses saved --}}
+                                    <div class="not-data-card" id="no-addresses-message">
+                                        <div class="no-data-body">
+                                            <img src="{{ asset('assets/images/address.png') }}" alt="missing icon" />
+                                        </div>
+                                        <div class="no-data-footer">
+                                            <p>You currently don't have any addresses saved</p>
+                                        </div>
+                                        <div class="no-data-action-sec">
+                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addressModal" onclick="openAddressModal('add')">
+                                                Add Your First Address
+                                            </button>
                                         </div>
                                     </div>
-                                    <div class="col-6">
-                                        <div class="data-field ">
-                                            <p><strong>Street Address:</strong></p>
-                                            <p>street#34 california </p>
-                                        </div>
+                                @else
+                                    {{-- Display saved addresses --}}
+                                    <div class="row" id="addresses-list">
+                                        @foreach($userAddresses as $address)
+                                            <div class="col-md-6 mb-4" data-address-id="{{ $address->id }}">
+                                                <div class="card h-100">
+                                                    <div class="card-body">
+                                                        <h5 class="card-title mb-3">{{ $address->recipient_name }}</h5>
+                                                        <div class="card-info-fields">
+                                                            <div class="data-field mb-2">
+                                                                <p><strong>Street Address:</strong></p>
+                                                                <p>{{ $address->street_address }}</p>
+                                                            </div>
+                                                            @if($address->apartment)
+                                                                <div class="data-field mb-2">
+                                                                    <p><strong>Apt:</strong></p>
+                                                                    <p>{{ $address->apartment }}</p>
+                                                                </div>
+                                                            @endif
+                                                            <div class="data-field mb-2">
+                                                                <p><strong>City:</strong></p>
+                                                                <p>{{ $address->city }}</p>
+                                                            </div>
+                                                            <div class="data-field mb-2">
+                                                                <p><strong>State:</strong></p>
+                                                                <p>{{ $address->state }}</p>
+                                                            </div>
+                                                            <div class="data-field mb-2">
+                                                                <p><strong>Zip Code:</strong></p>
+                                                                <p>{{ $address->postal_code }}</p>
+                                                            </div>
+                                                            <div class="data-field mb-2">
+                                                                <p><strong>Country:</strong></p>
+                                                                <p>{{ $address->country }}</p>
+                                                            </div>
+                                                            @if($address->phone)
+                                                                <div class="data-field mb-2">
+                                                                    <p><strong>Phone:</strong></p>
+                                                                    <p>{{ $address->phone }}</p>
+                                                                </div>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                    <div class="card-footer bg-white border-top" style="opacity: 1 !important; visibility: visible !important;">
+                                                        <div class="d-flex justify-content-between gap-2">
+                                                            <button type="button" class="btn btn-sm address-edit-btn" onclick="editAddress({{ $address->id }})" title="Edit Address">
+                                                                <i class="fas fa-edit"></i>
+                                                            </button>
+                                                            <button type="button" class="btn btn-sm address-delete-btn" onclick="deleteAddress({{ $address->id }})" title="Delete Address">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        @endforeach
                                     </div>
-                                    <div class="col-6">
-                                        <div class="data-field ">
-                                            <p><strong>Apt:</strong></p>
-                                            <p>J1312</p>
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="data-field">
-                                            <p><strong>Phone Number:</strong></p>
-                                            <p> 34234234234</p>
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="data-field">
-                                            <p><strong>State:</strong></p>
-                                            <p> california </p>
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="data-field">
-                                            <p><strong>Zip Code:</strong></p>
-                                            <p> 5745</p>
-                                        </div>
-                                    </div>
-                                </div>
 
-
+                                    @if($userAddresses->count() < 3)
+                                        <div class="text-center mt-4">
+                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addressModal" onclick="openAddressModal('add')">
+                                                Add Another Address
+                                            </button>
+                                        </div>
+                                    @else
+                                        <div class="alert alert-info text-center mt-4">
+                                            You have reached the maximum of 3 saved addresses.
+                                        </div>
+                                    @endif
+                                @endif
                             </div>
 
-
-
-
-
-                            <div class="modal fade" id="addressModal" tabindex="-1">
+                            {{-- Address Modal --}}
+                            <div class="modal fade" id="addressModal" tabindex="-1" aria-labelledby="addressModalLabel" aria-hidden="true">
                                 <div class="modal-dialog modal-lg modal-dialog-centered">
                                     <div class="modal-content p-4">
-
                                         <div class="modal-header border-0">
-                                            <h5 class="modal-title">Add New Address</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            <h5 class="modal-title" id="addressModalLabel">Add New Address</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
-
                                         <div class="modal-body">
-                                            <form>
-                                                <!-- Card Number -->
+                                            <form id="addressForm">
+                                                @csrf
+                                                <input type="hidden" id="address_id" name="address_id" value="">
+                                                <input type="hidden" id="form_method" name="_method" value="POST">
+                                                
                                                 <div class="mb-3">
-                                                    <input type="text" class="form-control border-0 border-bottom rounded-0 shadow-none" placeholder="Full Name">
+                                                    <input type="text" class="form-control border-0 border-bottom rounded-0 shadow-none" 
+                                                           id="recipient_name" name="recipient_name" placeholder="Full Name" required>
                                                 </div>
 
                                                 <div class="row mb-3">
                                                     <div class="col-8">
-                                                        <input type="text" class="form-control border-0 border-bottom rounded-0 shadow-none" placeholder="Street Address">
+                                                        <input type="text" class="form-control border-0 border-bottom rounded-0 shadow-none" 
+                                                               id="street_address" name="street_address" placeholder="Street Address" required>
                                                     </div>
                                                     <div class="col-4">
-                                                        <input type="text" class="form-control border-0 border-bottom rounded-0 shadow-none" placeholder="Apt #">
+                                                        <input type="text" class="form-control border-0 border-bottom rounded-0 shadow-none" 
+                                                               id="apartment" name="apartment" placeholder="Apt #">
                                                     </div>
                                                 </div>
 
                                                 <div class="row mb-3">
-                                                    <div class="col-9">
-                                                        <select class="form-select border-0 border-bottom rounded-0 shadow-none">
-                                                            <option selected>State</option>
-                                                            <option>CA</option>
-                                                            <option>NY</option>
-                                                            <option>TX</option>
-                                                        </select>
+                                                    <div class="col-6">
+                                                        <input type="text" class="form-control border-0 border-bottom rounded-0 shadow-none" 
+                                                               id="city" name="city" placeholder="City" required>
                                                     </div>
                                                     <div class="col-3">
-                                                        <input type="text" class="form-control border-0 border-bottom rounded-0 shadow-none" placeholder="Zip Code">
+                                                        <input type="text" class="form-control border-0 border-bottom rounded-0 shadow-none" 
+                                                               id="state" name="state" placeholder="State" required>
+                                                    </div>
+                                                    <div class="col-3">
+                                                        <input type="text" class="form-control border-0 border-bottom rounded-0 shadow-none" 
+                                                               id="postal_code" name="postal_code" placeholder="Zip Code" required>
                                                     </div>
                                                 </div>
 
                                                 <div class="mb-3">
-                                                    <input type="text" class="form-control border-0 border-bottom rounded-0 shadow-none" placeholder="Phone Number">
+                                                    <input type="text" class="form-control border-0 border-bottom rounded-0 shadow-none" 
+                                                           id="country" name="country" placeholder="Country" value="United States" required>
                                                 </div>
 
-                                                <!-- Checkbox -->
-                                                <div class="form-check mb-4">
-                                                    <input class="form-check-input" type="checkbox" id="defaultPayment" checked>
-                                                    <label class="form-check-label" for="defaultPayment">Set as default payment</label>
+                                                <div class="mb-3">
+                                                    <input type="tel" class="form-control border-0 border-bottom rounded-0 shadow-none" 
+                                                           id="phone" name="phone" placeholder="Phone Number">
                                                 </div>
 
-                                                <!-- Save Button -->
                                                 <button type="submit" class="btn w-100" style="background:#333; color:#fff; padding:12px;">
                                                     SAVE ADDRESS
                                                 </button>
@@ -1862,11 +2008,150 @@
                                 </div>
                             </div>
 
-
-
                         </div>
                     </div>
                 </div>
+
+                <script>
+                    function openAddressModal(mode, addressId = null) {
+                        const modal = document.getElementById('addressModal');
+                        const form = document.getElementById('addressForm');
+                        const modalTitle = document.getElementById('addressModalLabel');
+                        
+                        // Reset form
+                        form.reset();
+                        document.getElementById('address_id').value = '';
+                        document.getElementById('form_method').value = 'POST';
+                        document.getElementById('country').value = 'United States';
+                        
+                        if (mode === 'add') {
+                            modalTitle.textContent = 'Add New Address';
+                        } else if (mode === 'edit' && addressId) {
+                            modalTitle.textContent = 'Edit Address';
+                            document.getElementById('address_id').value = addressId;
+                            document.getElementById('form_method').value = 'PUT';
+                            
+                            // Fetch address data and pre-fill form
+                            fetch(`/addresses/${addressId}/edit`, {
+                                headers: {
+                                    'X-Requested-With': 'XMLHttpRequest',
+                                    'Accept': 'application/json'
+                                }
+                            })
+                            .then(res => {
+                                if (!res.ok) throw new Error('Failed to fetch address');
+                                return res.json();
+                            })
+                            .then(data => {
+                                console.log('Address data:', data); // Debug log
+                                
+                                // Set values with a small delay to ensure form is ready
+                                setTimeout(() => {
+                                    document.getElementById('recipient_name').value = data.recipient_name || '';
+                                    document.getElementById('street_address').value = data.street_address || '';
+                                    document.getElementById('apartment').value = data.apartment || '';
+                                    document.getElementById('city').value = data.city || '';
+                                    document.getElementById('state').value = data.state || '';
+                                    document.getElementById('postal_code').value = data.postal_code || '';
+                                    document.getElementById('country').value = data.country || 'United States';
+                                    document.getElementById('phone').value = data.phone || '';
+                                }, 100);
+                            })
+                            .catch(err => {
+                                console.error('Error loading address:', err);
+                                alert('Error loading address data. Please try again.');
+                            });
+                        }
+                    }
+
+                    function editAddress(addressId) {
+                        openAddressModal('edit', addressId);
+                        const modal = new bootstrap.Modal(document.getElementById('addressModal'));
+                        modal.show();
+                    }
+
+                    function deleteAddress(addressId) {
+                        Swal.fire({
+                            title: 'Delete Address?',
+                            text: "Are you sure you want to delete this address? This action cannot be undone.",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#d33',
+                            cancelButtonColor: '#6c757d',
+                            confirmButtonText: 'Yes, delete it',
+                            cancelButtonText: 'Cancel'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                                
+                                fetch(`/addresses/${addressId}`, {
+                                    method: 'DELETE',
+                                    headers: {
+                                        'X-CSRF-TOKEN': csrfToken,
+                                        'Accept': 'application/json',
+                                        'Content-Type': 'application/json'
+                                    }
+                                })
+                                .then(res => res.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        Swal.fire({
+                                            title: 'Deleted!',
+                                            text: 'Address has been deleted successfully.',
+                                            icon: 'success',
+                                            timer: 2000,
+                                            showConfirmButton: false
+                                        }).then(() => {
+                                            location.reload();
+                                        });
+                                    } else {
+                                        Swal.fire('Error!', data.message || 'Error deleting address', 'error');
+                                    }
+                                })
+                                .catch(err => {
+                                    console.error('Error:', err);
+                                    Swal.fire('Error!', 'Error deleting address. Please try again.', 'error');
+                                });
+                            }
+                        });
+                    }
+
+                    document.getElementById('addressForm').addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        
+                        const formData = new FormData(this);
+                        const addressId = document.getElementById('address_id').value;
+                        const method = document.getElementById('form_method').value;
+                        
+                        let url = '/addresses';
+                        if (method === 'PUT' && addressId) {
+                            url = `/addresses/${addressId}`;
+                        }
+                        
+                        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                        
+                        fetch(url, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': csrfToken,
+                                'Accept': 'application/json'
+                            },
+                            body: formData
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success) {
+                                location.reload();
+                            } else {
+                                alert(data.message || 'Error saving address');
+                            }
+                        })
+                        .catch(err => {
+                            console.error('Error:', err);
+                            alert('Error saving address');
+                        });
+                    });
+                </script>
 
 
 
@@ -1875,36 +2160,167 @@
                     <div class="side-inner-content-main">
                         <div class="side-inner-content resource-content change-password-section">
                             <h2>Change Password</h2>
-                            <div class="cp-form-group">
-                                <label>Current Password</label>
-                                <input type="password" class="cp-input cp-current-password">
-                                <span class="cp-toggle-eye">SHOW</span>
-                            </div>
+                            
+                            <div id="password-error-message" class="alert alert-danger" style="display: none;"></div>
+                            <div id="password-success-message" class="alert alert-success" style="display: none;"></div>
+                            
+                            <form id="changePasswordForm">
+                                @csrf
+                                <div class="cp-form-group">
+                                    <label>Current Password</label>
+                                    <input type="password" name="current_password" id="current_password" class="cp-input cp-current-password" required>
+                                    <span class="cp-toggle-eye" onclick="togglePasswordVisibility('current_password')">SHOW</span>
+                                </div>
 
-                            <div class="cp-form-group">
-                                <label>New Password</label>
-                                <input type="password" class="cp-input cp-new-password">
-                                <span class="cp-toggle-eye">SHOW</span>
-                                <ul class="cp-requirements">
-                                    <li class="cp-length">8 to 24 characters</li>
-                                    <li class="cp-lowercase">A lowercase letter</li>
-                                    <li class="cp-uppercase">An uppercase letter</li>
-                                    <li class="cp-number">A number</li>
-                                    <li class="cp-special">A special character (!@#$%^&*()_+)</li>
-                                </ul>
-                            </div>
+                                <div class="cp-form-group">
+                                    <label>New Password</label>
+                                    <input type="password" name="new_password" id="new_password" class="cp-input cp-new-password" required>
+                                    <span class="cp-toggle-eye" onclick="togglePasswordVisibility('new_password')">SHOW</span>
+                                    <ul class="cp-requirements">
+                                        <li class="cp-length">8 to 24 characters</li>
+                                        <li class="cp-lowercase">A lowercase letter</li>
+                                        <li class="cp-uppercase">An uppercase letter</li>
+                                        <li class="cp-number">A number</li>
+                                        <li class="cp-special">A special character (!@#$%^&*()_+)</li>
+                                    </ul>
+                                </div>
 
-                            <div class="cp-form-group">
-                                <label>Confirm Password</label>
-                                <input type="password" class="cp-input cp-confirm-password">
-                                <span class="cp-toggle-eye">SHOW</span>
-                            </div>
+                                <div class="cp-form-group">
+                                    <label>Confirm Password</label>
+                                    <input type="password" name="new_password_confirmation" id="confirm_password" class="cp-input cp-confirm-password" required>
+                                    <span class="cp-toggle-eye" onclick="togglePasswordVisibility('confirm_password')">SHOW</span>
+                                </div>
 
-                            <button class="cp-btn cp-save-btn" disabled>SAVE PASSWORD</button>
+                                <button type="submit" class="cp-btn cp-save-btn" id="savePasswordBtn">SAVE PASSWORD</button>
+                            </form>
 
                         </div>
                     </div>
                 </div>
+
+                <script>
+                    function togglePasswordVisibility(inputId) {
+                        const input = document.getElementById(inputId);
+                        const button = input.nextElementSibling;
+                        
+                        if (input.type === 'password') {
+                            input.type = 'text';
+                            button.textContent = 'HIDE';
+                        } else {
+                            input.type = 'password';
+                            button.textContent = 'SHOW';
+                        }
+                    }
+
+                    // Password validation
+                    const newPasswordInput = document.getElementById('new_password');
+                    const confirmPasswordInput = document.getElementById('confirm_password');
+                    const savePasswordBtn = document.getElementById('savePasswordBtn');
+                    
+                    if (newPasswordInput) {
+                        newPasswordInput.addEventListener('input', validatePassword);
+                        confirmPasswordInput.addEventListener('input', validatePassword);
+                    }
+
+                    function validatePassword() {
+                        const password = newPasswordInput.value;
+                        const confirm = confirmPasswordInput.value;
+                        
+                        // Check requirements
+                        const lengthValid = password.length >= 8 && password.length <= 24;
+                        const lowercaseValid = /[a-z]/.test(password);
+                        const uppercaseValid = /[A-Z]/.test(password);
+                        const numberValid = /[0-9]/.test(password);
+                        const specialValid = /[!@#$%^&*()_+]/.test(password);
+                        
+                        // Update UI
+                        document.querySelector('.cp-length').style.color = lengthValid ? 'green' : '';
+                        document.querySelector('.cp-lowercase').style.color = lowercaseValid ? 'green' : '';
+                        document.querySelector('.cp-uppercase').style.color = uppercaseValid ? 'green' : '';
+                        document.querySelector('.cp-number').style.color = numberValid ? 'green' : '';
+                        document.querySelector('.cp-special').style.color = specialValid ? 'green' : '';
+                        
+                        // Enable/disable button
+                        const allValid = lengthValid && lowercaseValid && uppercaseValid && numberValid && specialValid;
+                        const passwordsMatch = password === confirm && confirm.length > 0;
+                        
+                        savePasswordBtn.disabled = !(allValid && passwordsMatch);
+                    }
+
+                    // Form submission
+                    document.getElementById('changePasswordForm').addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        
+                        const errorMessage = document.getElementById('password-error-message');
+                        const successMessage = document.getElementById('password-success-message');
+                        const submitBtn = document.getElementById('savePasswordBtn');
+                        
+                        errorMessage.style.display = 'none';
+                        successMessage.style.display = 'none';
+                        
+                        const formData = new FormData(this);
+                        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                        
+                        submitBtn.disabled = true;
+                        submitBtn.textContent = 'SAVING...';
+                        
+                        fetch('{{ route("password.update") }}', {
+                            method: 'PUT',
+                            headers: {
+                                'X-CSRF-TOKEN': csrfToken,
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                current_password: formData.get('current_password'),
+                                new_password: formData.get('new_password'),
+                                new_password_confirmation: formData.get('new_password_confirmation')
+                            })
+                        })
+                        .then(res => {
+                            if (!res.ok) {
+                                return res.json().then(data => {
+                                    throw data;
+                                });
+                            }
+                            return res.json();
+                        })
+                        .then(data => {
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = 'SAVE PASSWORD';
+                            
+                            if (data.success) {
+                                // Reset form
+                                document.getElementById('changePasswordForm').reset();
+                                
+                                // Reset validation UI
+                                document.querySelectorAll('.cp-requirements li').forEach(li => {
+                                    li.style.color = '';
+                                });
+                                
+                                // Show SweetAlert
+                                Swal.fire({
+                                    title: 'Success!',
+                                    text: 'Your password has been changed successfully. A confirmation email has been sent.',
+                                    icon: 'success',
+                                    confirmButtonColor: '#8d5943'
+                                });
+                            } else {
+                                errorMessage.textContent = data.message || 'Error changing password. Please check your input.';
+                                errorMessage.style.display = 'block';
+                            }
+                        })
+                        .catch(err => {
+                            console.error('Error:', err);
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = 'SAVE PASSWORD';
+                            
+                            const message = err.message || 'Error changing password. Please try again.';
+                            errorMessage.textContent = message;
+                            errorMessage.style.display = 'block';
+                        });
+                    });
+                </script>
 
 
 
@@ -1924,26 +2340,155 @@
                     </div>
                 </div>
 
-
                 <div class="side-content-tabs" id="communication" style="display:none">
                     <div class="side-inner-content-main">
                         <div class="side-inner-content resource-content change-password-section">
                             <h2>Communication Preferences</h2>
-
-                            <!-- <div class="cp-form-group">
-                                <label>Email</label>
-                                <input type="email" class="cp-input">
-                            </div> -->
-                            <div class="cp-form-group">
-                                By unsubscribing, you’ll stop receiving all marketing emails and promotional messages from us.
-                            </div>
-                            <button class="btn end-session-btn mt-3">
-                                Unsubcribe
-                            </button>
+                            
+                            <p class="mb-4">Manage how you'd like to hear from us. You can update your preferences at any time.</p>
+                            
+                            <div id="preferences-error-message" class="alert alert-danger" style="display: none;"></div>
+                            <div id="preferences-success-message" class="alert alert-success" style="display: none;"></div>
+                            
+                            <form id="communicationPreferencesForm">
+                                @csrf
+                                
+                                <div class="preference-item mb-4">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h5 class="mb-1">Marketing Emails</h5>
+                                            <p class="text-muted mb-0">Receive promotional offers and special deals</p>
+                                        </div>
+                                        <div class="toggle-switch">
+                                            <input type="checkbox" id="marketing_emails" name="marketing_emails" value="1" {{ Auth::user()->marketing_emails ? 'checked' : '' }}>
+                                            <label for="marketing_emails" class="toggle-label"></label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="preference-item mb-4">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h5 class="mb-1">Order Updates</h5>
+                                            <p class="text-muted mb-0">Get notified about your order status and shipping</p>
+                                        </div>
+                                        <div class="toggle-switch">
+                                            <input type="checkbox" id="order_updates" name="order_updates" value="1" {{ Auth::user()->order_updates ? 'checked' : '' }}>
+                                            <label for="order_updates" class="toggle-label"></label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="preference-item mb-4">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h5 class="mb-1">Newsletter</h5>
+                                            <p class="text-muted mb-0">Stay updated with our latest news and collections</p>
+                                        </div>
+                                        <div class="toggle-switch">
+                                            <input type="checkbox" id="newsletter" name="newsletter" value="1" {{ Auth::user()->newsletter ? 'checked' : '' }}>
+                                            <label for="newsletter" class="toggle-label"></label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="preference-item mb-4">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h5 class="mb-1">Product Recommendations</h5>
+                                            <p class="text-muted mb-0">Receive personalized product suggestions</p>
+                                        </div>
+                                        <div class="toggle-switch">
+                                            <input type="checkbox" id="product_recommendations" name="product_recommendations" value="1" {{ Auth::user()->product_recommendations ? 'checked' : '' }}>
+                                            <label for="product_recommendations" class="toggle-label"></label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <button type="submit" class="btn w-100" style="background:#8d5943; color:#fff; padding:12px;" id="savePreferencesBtn">
+                                    SAVE PREFERENCES
+                                </button>
+                            </form>
 
                         </div>
                     </div>
                 </div>
+                
+                <script>
+                    // Communication Preferences Form Submission
+                    if (document.getElementById('communicationPreferencesForm')) {
+                        document.getElementById('communicationPreferencesForm').addEventListener('submit', function(e) {
+                            e.preventDefault();
+                            
+                            const errorMessage = document.getElementById('preferences-error-message');
+                            const successMessage = document.getElementById('preferences-success-message');
+                            const submitBtn = document.getElementById('savePreferencesBtn');
+                            
+                            errorMessage.style.display = 'none';
+                            successMessage.style.display = 'none';
+                            
+                            const formData = new FormData(this);
+                            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+                            
+                            // Build preferences object - unchecked boxes won't be in formData
+                            const preferences = {
+                                marketing_emails: formData.get('marketing_emails') === '1' ? 1 : 0,
+                                order_updates: formData.get('order_updates') === '1' ? 1 : 0,
+                                newsletter: formData.get('newsletter') === '1' ? 1 : 0,
+                                product_recommendations: formData.get('product_recommendations') === '1' ? 1 : 0
+                            };
+                            
+                            submitBtn.disabled = true;
+                            submitBtn.textContent = 'SAVING...';
+                            
+                            fetch('{{ route("preferences.update") }}', {
+                                method: 'PUT',
+                                headers: {
+                                    'X-CSRF-TOKEN': csrfToken,
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(preferences)
+                            })
+                            .then(res => {
+                                if (!res.ok) {
+                                    return res.json().then(data => {
+                                        throw data;
+                                    });
+                                }
+                                return res.json();
+                            })
+                            .then(data => {
+                                submitBtn.disabled = false;
+                                submitBtn.textContent = 'SAVE PREFERENCES';
+                                
+                                if (data.success) {
+                                    // Show SweetAlert
+                                    Swal.fire({
+                                        title: 'Success!',
+                                        text: 'Your communication preferences have been updated. A confirmation email has been sent.',
+                                        icon: 'success',
+                                        confirmButtonColor: '#8d5943'
+                                    });
+                                } else {
+                                    errorMessage.textContent = data.message || 'Error updating preferences.';
+                                    errorMessage.style.display = 'block';
+                                }
+                            })
+                            .catch(err => {
+                                console.error('Error:', err);
+                                submitBtn.disabled = false;
+                                submitBtn.textContent = 'SAVE PREFERENCES';
+                                
+                                const message = err.message || 'Error updating preferences. Please try again.';
+                                errorMessage.textContent = message;
+                                errorMessage.style.display = 'block';
+                            });
+                        });
+                    }
+                </script>
+
+
 
 
             </div>
@@ -1952,6 +2497,7 @@
         </div>
     </x-slot>
     <x-slot name="insertjavascript">
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
         <script>
 
 

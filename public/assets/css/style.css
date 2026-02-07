@@ -2124,6 +2124,7 @@ hr {
     transition: right 0.9s ease;
     scrollbar-width: none;
     -ms-overflow-style: none;
+    z-index: 100000;
 }
 
 .right-side-bar::-webkit-scrollbar {

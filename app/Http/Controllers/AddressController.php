@@ -46,14 +46,29 @@ class AddressController extends Controller
     /**
      * Store a newly created address in storage.
      */
-    public function store(StoreAddressRequest $request): RedirectResponse
+    public function store(StoreAddressRequest $request)
     {
         try {
-            $this->addressService->createAddress(auth()->user(), $request->validated());
+            $address = $this->addressService->createAddress(auth()->user(), $request->validated());
+            
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Address added successfully.',
+                    'address' => $address
+                ]);
+            }
             
             return redirect()->route('addresses.index')
                 ->with('success', 'Address added successfully.');
         } catch (\Exception $e) {
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to add address. Please try again.'
+                ], 422);
+            }
+            
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Failed to add address. Please try again.');
@@ -63,12 +78,23 @@ class AddressController extends Controller
     /**
      * Show the form for editing the specified address.
      */
-    public function edit(Address $address): View|RedirectResponse
+    public function edit(Address $address)
     {
         // Check if user owns the address
         if (!$this->addressService->userOwnsAddress(auth()->user(), $address)) {
+            if (request()->wantsJson() || request()->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You are not authorized to edit this address.'
+                ], 403);
+            }
+            
             return redirect()->route('addresses.index')
                 ->with('error', 'You are not authorized to edit this address.');
+        }
+
+        if (request()->wantsJson() || request()->ajax()) {
+            return response()->json($address);
         }
 
         return view('addresses.edit', compact('address'));
@@ -77,14 +103,29 @@ class AddressController extends Controller
     /**
      * Update the specified address in storage.
      */
-    public function update(UpdateAddressRequest $request, Address $address): RedirectResponse
+    public function update(UpdateAddressRequest $request, Address $address)
     {
         try {
-            $this->addressService->updateAddress($address, $request->validated());
+            $updatedAddress = $this->addressService->updateAddress($address, $request->validated());
+            
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Address updated successfully.',
+                    'address' => $updatedAddress
+                ]);
+            }
             
             return redirect()->route('addresses.index')
                 ->with('success', 'Address updated successfully.');
         } catch (\Exception $e) {
+            if ($request->wantsJson() || $request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to update address. Please try again.'
+                ], 422);
+            }
+            
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Failed to update address. Please try again.');
@@ -94,10 +135,17 @@ class AddressController extends Controller
     /**
      * Remove the specified address from storage.
      */
-    public function destroy(Address $address): RedirectResponse
+    public function destroy(Address $address)
     {
         // Check if user owns the address
         if (!$this->addressService->userOwnsAddress(auth()->user(), $address)) {
+            if (request()->wantsJson() || request()->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You are not authorized to delete this address.'
+                ], 403);
+            }
+            
             return redirect()->route('addresses.index')
                 ->with('error', 'You are not authorized to delete this address.');
         }
@@ -105,9 +153,23 @@ class AddressController extends Controller
         try {
             $this->addressService->deleteAddress($address);
             
+            if (request()->wantsJson() || request()->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Address deleted successfully.'
+                ]);
+            }
+            
             return redirect()->route('addresses.index')
                 ->with('success', 'Address deleted successfully.');
         } catch (\Exception $e) {
+            if (request()->wantsJson() || request()->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to delete address. Please try again.'
+                ], 422);
+            }
+            
             return redirect()->back()
                 ->with('error', 'Failed to delete address. Please try again.');
         }

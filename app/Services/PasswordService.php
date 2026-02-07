@@ -63,7 +63,7 @@ class PasswordService
         }
 
         // Check for at least one special character
-        if (!preg_match('/[@$!%*?&]/', $password)) {
+        if (!preg_match('/[!@#$%^&*()_+]/', $password)) {
             return false;
         }
 
@@ -79,7 +79,7 @@ class PasswordService
     public function sendPasswordChangedNotification(User $user): void
     {
         try {
-            Mail::to($user->email)->queue(new PasswordChangedMail($user));
+            Mail::to($user->email)->send(new PasswordChangedMail($user));
         } catch (\Exception $e) {
             // Log the error but don't throw exception to avoid blocking user workflow
             \Log::error('Failed to send password changed email', [
